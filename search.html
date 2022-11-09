@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Web Speech API Demo</title>
+<head>
+    <script src="https://unpkg.com/vue@1.0.28/dist/vue.js"></script>
+</head>
+<style>
+    body {
+    display: flex;
+    align-items: top;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    }
+    .imgs {
+        display: flex;
+        align-items: center;
+    }
+    .search-component {
+    border: 2px solid #777;
+    border-radius: 2rem;
+    height: 3.5rem;
+    width: clamp(15rem, 100%, 25rem);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    }
+
+    .search-component:focus-within {
+    border-color: #000;
+    box-shadow: 0 0 0 1px;
+    }
+
+    .search-component button {
+    height: 3rem;
+    width: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 0;
+    color: white;
+    background: #777;
+    margin-right: 0.25rem;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    }
+
+    .search-component button[type="button"] {
+    display: none;
+    }
+
+    .search-component button[type="button"].visible {
+    display: flex;
+    }
+
+    @keyframes voiceRecording {
+    0%, 100% { d: path("M50,30 50,70"); }
+    50% { d: path("M50,10 50,90"); }
+    }
+
+    .search-component.listening button[type="button"] path {
+    d: path("M50,30 50,70");
+    stroke-width: 18;
+    animation: voiceRecording 0.5s infinite;
+    transition: all 0.2s;
+    }
+
+    .search-component.listening button[type="button"] path:nth-child(1) {
+    transform: translate(-30%);
+    animation-delay: -0.25s;
+    }
+
+    .search-component.listening button[type="button"] path:nth-child(2) {
+    transform: translate(30%);
+    animation-delay: -0.25s;
+    }
+
+    .search-component:focus-within button {
+    background: #444;
+    }
+
+    .search-component button:focus {
+    background: #000;
+    border: 1px dashed white;
+    box-shadow: inset 0 0 0 1px white;
+    }
+
+
+    .search-component button {
+    min-width: 3rem;
+    }
+
+    .search-component button span {
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    left: -1000in;
+    }
+
+    .search-component label {
+    flex: 1;
+    display: flex;
+    height: 100%;
+    }
+
+    .search-component input {
+    flex: 1;
+    border: 0;
+    font-size: 1.25rem;
+    padding-left: 1.25rem;
+    outline: none;
+    }
+
+    .search-component input::-ms-clear {
+    display: none;
+    }
+
+    .search-component input::-webkit-search-decoration,
+    .search-component input::-webkit-search-cancel-button {
+    display: none;
+    }
+
+    .search-component label > span {
+    user-select: none;
+    position: absolute;
+    left: 1.25rem;
+    font-family: arial, verdana, sans-serif;
+    color: #777;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: all 0.5s;
+    }
+
+    .search-component label input:focus + span,
+    .search-component label input:valid + span {
+    top: 0.125rem;
+    font-size: 0.8rem;
+    transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion) {
+    .search-component * {
+        transition: none !important;
+        animation: none !important;
+    }
+    }
+
+
+
+    /***/
+
+    #youtube {
+    z-index: 2;
+    display: block;
+    width: 100px;
+    height: 70px;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    background: red;
+    border-radius: 50% / 11%;
+    transition: transform 0.5s;
+    }
+
+    #youtube:hover,
+    #youtube:focus {
+    transform: scale(1.1);
+    }
+
+    #youtube::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 7.5%;
+    left: -6%;
+    width: 112%;
+    height: 85%;
+    background: red;
+    border-radius: 9% / 50%;
+    }
+
+    #youtube::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    width: 45px;
+    height: 30px;
+    border: 15px solid transparent;
+    box-sizing: border-box;
+    border-left: 30px solid white;
+    }
+
+    #youtube span {
+    font-size: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    }
+
+
+</style>
+<body id="body">
+    <form class="search-component" role="search">
+        <label>
+          <input type="search" required/>
+          <span>Type to search</span>
+        </label>
+        <button type="button">
+          <span>Dictate</span>
+          <svg viewBox="0 0 100 100" width="1.5rem" height="1.5rem" aria-hidden="true">
+            <g stroke="currentColor" stroke-linecap="round" fill="none">
+              <path d="M50,15 50,50" stroke-width="20"  />
+              <path d="M30,35 C 25,84 75,84 70,35" stroke-width="6" />
+              <path d="M50,70 50,96" stroke-width="6" />
+            </g>
+          </svg>
+        </button>
+        <button type="submit">
+          <span>Search</span>
+          <svg viewBox="0 0 100 100" width="1.5rem" height="1.5rem" aria-hidden="true">
+            <g stroke="currentColor" >
+              <circle cx="40" cy="40" r="30" stroke-width="5" fill="none" />
+              <path d="M65,65 90,90" stroke-width="10" />
+            </g>
+          </svg>
+        </button>
+      </form>
+    <a href="index.html">upload</a>
+    <p id="imgs" class="imgs">
+
+    </p>
+      
+      <!-- <a id="youtube" href="https://www.youtube.com/watch?v=trGQYj1C3lc" target="_blank">
+        <span>See how this drawing was made</span>
+      </a> -->
+</body>
+
+<script>
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+const searches = document.querySelectorAll(".search-component");
+for (let x = 0; x < searches.length; x++) {
+  const search = searches[x];
+  const submitButton = search.querySelector("button[type='submit']");
+  const dictateButton = search.querySelector("button[type='button']");
+  const searchLabel = search.querySelector("label > span");
+  const searchBox = search.querySelector("input");
+  let listening = false;
+  const API_ENDPOINT = 'https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v2/search';
+  var urls;
+
+  submitButton.addEventListener("click", async function(e) {
+    e.preventDefault();
+    var imgs = document.getElementById('imgs');
+    if (document.getElementById('img_container'))
+        imgs.removeChild(document.getElementById('img_container'));
+    console.log(searchBox.value);
+    const result = await fetch(API_ENDPOINT, {
+            method: 'GET',
+            headers: {
+              "Origin": null,
+              "Query": searchBox.value,
+              "Access-Control-Request-Method": "GET"
+            }
+          }).then(
+            function(response){
+                return response.json()
+            }).then(
+                function(data){
+                    return data.urls
+                }).then(
+                    function(urls){
+                        console.log(urls);
+                        newdiv = document.createElement('div');
+                        newdiv.setAttribute('id', 'img_container');
+                        imgs.appendChild(newdiv);
+                        for(let i = 0; i < urls.length; i++) {
+                            var img = new Image();
+                            img.src = urls[i];
+                            img.width = 256;
+                            img.height= 256;
+                            console.log(img.src)
+                            newdiv.appendChild(img);
+                        }
+                })
+    // search thing: call API/service, get data, show data...
+  });
+
+  if (SpeechRecognition) {
+    dictateButton.classList.add("visible");
+    searchLabel.textContent = "Type or dictate to search"
+    
+    dictateButton.addEventListener("click", function(e) {
+      if (!listening) {
+        const recognition = new SpeechRecognition();
+
+        recognition.onspeechend = function() {
+          recognition.stop();
+          listening = false;
+          search.classList.remove("listening");
+        }
+        
+        recognition.onerror = function() {
+          listening = false;
+          search.classList.remove("listening");
+        }
+
+        recognition.onresult = function(e) {
+          const transcript = e.results[0][0].transcript;
+          searchBox.value = transcript;
+        }
+
+        recognition.start();
+        listening = true;
+        search.classList.add("listening");
+      }
+    })
+  }
+}
+</script>

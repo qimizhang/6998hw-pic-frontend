@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image Uploader</title>
+    <script src="https://unpkg.com/vue@1.0.28/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios@0.2.1/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Image Uploader</h1>
+  
+      <div v-if="!image">
+        <h4>Please Select an Image</h4>
+        <br><br><br><br>
+        <input id="inp" type="file" @change="onFileChange" accept="image/jpeg">
+      </div>
+      <div v-else>
+        <img :src="image" />
+        <button v-if="!uploadURL" @click="removeImage">Remove image</button>
+        <button v-if="!uploadURL" @click="uploadImage">Upload image</button>
+      </div>
+      <br>
+      <form>
+        labels:
+        <input type = "text" @change="onLabelChange">
+      </form>
+      <br><br><br>
+    
+      <a href="search.html">
+        Go to Search
+      </a>
+      <!-- <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2> -->
+    </div>
+  
+    <script>
+      const MAX_IMAGE_SIZE = 100000000000
+
+      /* ENTER YOUR ENDPOINT HERE */
+
+      const API_ENDPOINT = 'https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v2/upload' // e.g. https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v1
+      var labels
+      new Vue({
+        el: "#app",
+        data: {
+          image: '',
+          uploadURL: '',
+          name:'',
+        },
+        methods: {
+          onLabelChange(e){
+
+            labels = e.target.value
+            console.log(e.target.value)
+
+
+          },
+          onFileChange (e) {
+            let files = e.target.files || e.dataTransfer.files
+            if (!files.length) return
+            this.createImage(files[0])
+          },
+          createImage (file) {
+            // var image = new Image()
+            let reader = new FileReader()
+            name=file.name
+            console.log(name)
+            reader.onload = (e) => {
+              console.log('length: ', e.target.result.includes('data:image/jpeg'))
+              if (!e.target.result.includes('data:image/jpeg')) {
+                return alert('Wrong file type - JPG only.')
+              }
+              if (e.target.result.length > MAX_IMAGE_SIZE) {
+                return alert('Image is loo large.')
+              }
+              this.image = e.target.result
+              console.log(this.image)
+            }
+            reader.readAsDataURL(file)
+          },
+          removeImage: function (e) {
+            console.log('Remove clicked')
+            this.image = ''
+          },
+          uploadImage: async function (e) {
+            console.log('Upload clicked')
+            console.log('Uploading: ', this.image)
+            let binary = atob(this.image.split(',')[1])
+            let array = []
+            for (var i = 0; i < binary.length; i++) {
+              array.push(binary.charCodeAt(i))
+            }
+            let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'})
+            // console.log(blobData)
+            // console.log('Uploading to: ', response.uploadURL)
+            let headers = {
+                "filename": name,
+                "Content-Type": 'image/jpeg',
+                "Origin": null,
+                "Access-Control-Request-Method": "PUT",
+                "x-amz-acl":"public-read",
+                "Access-Control-Request-Headers": "filename, Content-Type, x-amz-meta-customLabels, x-amz-acl" 
+            }
+            if(labels){
+              headers["x-amz-meta-customLabels"]=labels
+            }
+            
+            const result = await fetch(API_ENDPOINT, {
+              method: 'PUT',
+              body: blobData,
+              headers: headers
+            })
+            console.log('Result: ', result)
+            if(result.status===200){
+              alert("Successfully Upload!")
+            }
+            else{
+              alert("Upload Failed!")
+            }
+
+            // Final URL for the user doesn't need the query string params
+            // this.uploadURL = response.uploadURL.split('?')[0]
+          }
+        }
+      })
+    </script>
+    <style type="text/css">
+      body {
+        background: #20262E;
+        padding: 20px;
+        font-family: sans-serif;
+      }
+      #inp {
+        text-align-last: center; 
+        margin: auto; 
+      }
+      #app {
+        background: #fff;
+        border-radius: 4px;
+        padding: 200px;
+        transition: all 0.2s;
+        text-align: center;
+      }
+      #logo {
+        width: 100px;
+      }
+      h2 {
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+      h1, h2 {
+        font-weight: normal;
+        margin-bottom: 15px;
+      }
+      a {
+        color: #42b983;
+      }
+      img {
+        width: 30%;
+        margin: auto;
+        display: block;
+        margin-bottom: 20px;
+      }
+    </style>
+  </body>
+</html>
