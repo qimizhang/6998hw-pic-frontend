@@ -237,9 +237,6 @@
 
     </p>
       
-      <!-- <a id="youtube" href="https://www.youtube.com/watch?v=trGQYj1C3lc" target="_blank">
-        <span>See how this drawing was made</span>
-      </a> -->
 </body>
 
 <script>
@@ -273,10 +270,14 @@ for (let x = 0; x < searches.length; x++) {
                 return response.json()
             }).then(
                 function(data){
+
                     return data.urls
                 }).then(
                     function(urls){
                         console.log(urls);
+                        if(urls.length===0){
+                          alert("No matched results!")
+                        }
                         newdiv = document.createElement('div');
                         newdiv.setAttribute('id', 'img_container');
                         imgs.appendChild(newdiv);
