@@ -1,8 +1,21 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Web Speech API Demo</title>
+
 <head>
     <script src="https://unpkg.com/vue@1.0.28/dist/vue.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/axios/dist/axios.standalone.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/CryptoJS/rollups/hmac-sha256.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/CryptoJS/rollups/sha256.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/CryptoJS/components/hmac.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/CryptoJS/components/enc-base64.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/url-template/url-template.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/sigV4Client.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/apiGatewayClient.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/utils.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/apigClient.js"></script>
+    <!-- <script src="./assets/js/aws-sdk.min.js"></script> -->
 </head>
 <style>
     body {
@@ -237,9 +250,16 @@
 
     </p>
       
-</body>
+    <script>
+      var apigClient = apigClientFactory.newClient({});
+    </script>
+  </body>
+
+
 
 <script>
+  
+// import apiClientFactory from './apigClient.js'
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 const searches = document.querySelectorAll(".search-component");
 for (let x = 0; x < searches.length; x++) {
@@ -258,20 +278,16 @@ for (let x = 0; x < searches.length; x++) {
     if (document.getElementById('img_container'))
         imgs.removeChild(document.getElementById('img_container'));
     console.log(searchBox.value);
-    const result = await fetch(API_ENDPOINT, {
-            method: 'GET',
-            headers: {
-              "Origin": null,
-              "Query": searchBox.value,
-              "Access-Control-Request-Method": "GET"
-            }
-          }).then(
-            function(response){
-                return response.json()
-            }).then(
-                function(data){
+    var params = {
+      q:searchBox.value
+    }
+    body={}
+    
 
-                    return data.urls
+    var response= apigClient.searchGet(params,body,{}).then(
+                function(data){
+                  console.log(data.data)
+                    return data.data.urls
                 }).then(
                     function(urls){
                         console.log(urls);
@@ -290,9 +306,42 @@ for (let x = 0; x < searches.length; x++) {
                             newdiv.appendChild(img);
                         }
                 })
-    // search thing: call API/service, get data, show data...
+  //   const result = await fetch(API_ENDPOINT, {
+  //           method: 'GET',
+  //           headers: {
+  //             "Origin": null,
+  //             "Query": searchBox.value,
+  //             "Access-Control-Request-Method": "GET"
+  //           }
+  //         }).then(
+  //           function(response){
+  //               return response.json()
+  //           }).then(
+  //               function(data){
+
+  //                   return data.urls
+  //               }).then(
+  //                   function(urls){
+  //                       console.log(urls);
+  //                       if(urls.length===0){
+  //                         alert("No matched results!")
+  //                       }
+  //                       newdiv = document.createElement('div');
+  //                       newdiv.setAttribute('id', 'img_container');
+  //                       imgs.appendChild(newdiv);
+  //                       for(let i = 0; i < urls.length; i++) {
+  //                           var img = new Image();
+  //                           img.src = urls[i];
+  //                           img.width = 256;
+  //                           img.height= 256;
+  //                           console.log(img.src)
+  //                           newdiv.appendChild(img);
+  //                       }
+  //               })
+  //   // search thing: call API/service, get data, show data...
   });
 
+    
   if (SpeechRecognition) {
     dictateButton.classList.add("visible");
     searchLabel.textContent = "Type or dictate to search"
@@ -300,6 +349,7 @@ for (let x = 0; x < searches.length; x++) {
     dictateButton.addEventListener("click", function(e) {
       if (!listening) {
         const recognition = new SpeechRecognition();
+        recognition.lang = "en-US"
 
         recognition.onspeechend = function() {
           recognition.stop();

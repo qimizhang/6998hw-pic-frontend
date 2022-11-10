@@ -4,6 +4,21 @@
     <title>Image Uploader</title>
     <script src="https://unpkg.com/vue@1.0.28/dist/vue.js"></script>
     <script src="https://unpkg.com/axios@0.2.1/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@1.0.28/dist/vue.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/axios/dist/axios.standalone.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/CryptoJS/rollups/hmac-sha256.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/CryptoJS/rollups/sha256.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/CryptoJS/components/hmac.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/CryptoJS/components/enc-base64.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/url-template/url-template.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/sigV4Client.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/apiGatewayClient.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/utils.js"></script>
+    <script type = "text/javascript" src="assets/js/sdk/apigClient.js"></script>
+    <script>
+      var apigClient = apigClientFactory.newClient({});
+    </script>
   </head>
   <body>
     <div id="app">
@@ -90,8 +105,7 @@
               array.push(binary.charCodeAt(i))
             }
             let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'})
-            // console.log(blobData)
-            // console.log('Uploading to: ', response.uploadURL)
+            console.log(blobData)
             let headers = {
                 "filename": name,
                 "Content-Type": 'image/jpeg',
@@ -110,12 +124,16 @@
               headers: headers
             })
             console.log('Result: ', result)
+ 
+
             if(result.status===200){
               alert("Successfully Upload!")
             }
+            
             else{
               alert("Upload Failed!")
             }
+            
 
             // Final URL for the user doesn't need the query string params
             // this.uploadURL = response.uploadURL.split('?')[0]
