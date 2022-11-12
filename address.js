@@ -1,0 +1,1 @@
+var addr = 'https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v2/upload'

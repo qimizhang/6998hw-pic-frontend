@@ -16,9 +16,24 @@
     <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
     <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/utils.js"></script>
     <script type = "text/javascript" src="assets/js/sdk/apigClient.js"></script>
+    <script type = "text/javascript" src="address.js"></script>
     <script>
       var apigClient = apigClientFactory.newClient({});
     </script>
+    <!-- <script type="text/javascript">
+        const {readFileSync, promises: fsPromises} = require('fs');
+        // ✅ read file SYNCHRONOUSLY
+        function syncReadFile(filename) {
+          const contents = readFileSync(filename, 'utf-8');
+
+          const arr = contents;
+
+          console.log(arr); // 👉️ ['One', 'Two', 'Three', 'Four']
+
+          return arr;
+        }
+        add = syncReadFile('./example.txt');
+    </script> -->
   </head>
   <body>
     <div id="app">
@@ -49,10 +64,10 @@
   
     <script>
       const MAX_IMAGE_SIZE = 100000000000
+      console.log(addr)
 
-      /* ENTER YOUR ENDPOINT HERE */
-
-      const API_ENDPOINT = 'https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v2/upload' // e.g. https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v1
+      // const API_ENDPOINT = 'https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v2/upload' // e.g. https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v1
+      const API_ENDPOINT = addr
       var labels
       new Vue({
         el: "#app",
@@ -104,6 +119,7 @@
             for (var i = 0; i < binary.length; i++) {
               array.push(binary.charCodeAt(i))
             }
+            Blob.constructor = () => Blob;
             let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'})
             console.log(blobData)
             let headers = {
@@ -124,8 +140,37 @@
               headers: headers
             })
             console.log('Result: ', result)
- 
 
+            // var params = {
+            //   "filename": name,
+            //   "x-amz-acl":"public-read",
+            //   "Content-Type": 'image/jpeg'
+
+            // };
+            // var addparameters ={
+            //   headers:{
+            //     "Content-Type": 'image/jpeg'
+            //   }
+            // }
+            // if(labels){
+            //   params["x-amz-meta-customLabels"]=labels
+            // }
+            // body = blobData;
+            // // Blob.constructor = () => Blob;
+            // var response = apigClient.uploadPut(params, body, addparameters).then(
+            //   function(data){
+            //     console.log(data)
+            //     result = data
+            //     if(result.status===200){
+            //       alert("Successfully Upload!")
+            //     }
+                
+            //     else{
+            //       alert("Upload Failed!")
+            //     }
+            //   }
+            // )
+ 
             if(result.status===200){
               alert("Successfully Upload!")
             }
@@ -134,9 +179,6 @@
               alert("Upload Failed!")
             }
             
-
-            // Final URL for the user doesn't need the query string params
-            // this.uploadURL = response.uploadURL.split('?')[0]
           }
         }
       })

@@ -15,6 +15,7 @@
     <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
     <script type = "text/javascript" src="assets/js/sdk/lib/apiGatewayCore/utils.js"></script>
     <script type = "text/javascript" src="assets/js/sdk/apigClient.js"></script>
+    <script type = "text/javascript" src="address.js"></script>
     <!-- <script src="./assets/js/aws-sdk.min.js"></script> -->
 </head>
 <style>
@@ -269,7 +270,8 @@ for (let x = 0; x < searches.length; x++) {
   const searchLabel = search.querySelector("label > span");
   const searchBox = search.querySelector("input");
   let listening = false;
-  const API_ENDPOINT = 'https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v2/search';
+  // const API_ENDPOINT = 'https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v2/search';
+  const API_ENDPOINT = addr
   var urls;
 
   submitButton.addEventListener("click", async function(e) {
