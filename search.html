@@ -271,7 +271,7 @@ for (let x = 0; x < searches.length; x++) {
   const searchBox = search.querySelector("input");
   let listening = false;
   // const API_ENDPOINT = 'https://sdyinb3vy3.execute-api.us-east-1.amazonaws.com/v2/search';
-  const API_ENDPOINT = addr
+  const API_ENDPOINT = addr + '/search'
   var urls;
 
   submitButton.addEventListener("click", async function(e) {
@@ -286,10 +286,42 @@ for (let x = 0; x < searches.length; x++) {
     body={}
     
 
-    var response= apigClient.searchGet(params,body,{}).then(
+    // var response= apigClient.searchGet(params,body,{}).then(
+    //             function(data){
+    //               console.log(data.data)
+    //                 return data.data.urls
+    //             }).then(
+    //                 function(urls){
+    //                     console.log(urls);
+    //                     if(urls.length===0){
+    //                       alert("No matched results!")
+    //                     }
+    //                     newdiv = document.createElement('div');
+    //                     newdiv.setAttribute('id', 'img_container');
+    //                     imgs.appendChild(newdiv);
+    //                     for(let i = 0; i < urls.length; i++) {
+    //                         var img = new Image();
+    //                         img.src = urls[i];
+    //                         img.width = 256;
+    //                         img.height= 256;
+    //                         console.log(img.src)
+    //                         newdiv.appendChild(img);
+    //                     }
+    //             })
+    const result = await fetch(API_ENDPOINT, {
+            method: 'GET',
+            headers: {
+              "Origin": null,
+              "Query": searchBox.value,
+              "Access-Control-Request-Method": "GET"
+            }
+          }).then(
+            function(response){
+                return response.json()
+            }).then(
                 function(data){
-                  console.log(data.data)
-                    return data.data.urls
+
+                    return data.urls
                 }).then(
                     function(urls){
                         console.log(urls);
@@ -308,38 +340,6 @@ for (let x = 0; x < searches.length; x++) {
                             newdiv.appendChild(img);
                         }
                 })
-  //   const result = await fetch(API_ENDPOINT, {
-  //           method: 'GET',
-  //           headers: {
-  //             "Origin": null,
-  //             "Query": searchBox.value,
-  //             "Access-Control-Request-Method": "GET"
-  //           }
-  //         }).then(
-  //           function(response){
-  //               return response.json()
-  //           }).then(
-  //               function(data){
-
-  //                   return data.urls
-  //               }).then(
-  //                   function(urls){
-  //                       console.log(urls);
-  //                       if(urls.length===0){
-  //                         alert("No matched results!")
-  //                       }
-  //                       newdiv = document.createElement('div');
-  //                       newdiv.setAttribute('id', 'img_container');
-  //                       imgs.appendChild(newdiv);
-  //                       for(let i = 0; i < urls.length; i++) {
-  //                           var img = new Image();
-  //                           img.src = urls[i];
-  //                           img.width = 256;
-  //                           img.height= 256;
-  //                           console.log(img.src)
-  //                           newdiv.appendChild(img);
-  //                       }
-  //               })
   //   // search thing: call API/service, get data, show data...
   });
 
