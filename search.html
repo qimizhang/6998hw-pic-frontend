@@ -308,7 +308,7 @@ for (let x = 0; x < searches.length; x++) {
     //                         newdiv.appendChild(img);
     //                     }
     //             })
-    const result = await fetch(API_ENDPOINT, {
+    const result = await fetch(API_ENDPOINT+'?q='+searchBox.value, {
             method: 'GET',
             headers: {
               "Origin": null,
