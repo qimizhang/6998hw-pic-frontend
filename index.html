@@ -123,6 +123,7 @@
             let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'})
             console.log(blobData)
             let headers = {
+                "bucketname": bucket,
                 "filename": name,
                 "Content-Type": 'image/jpeg',
                 "Origin": null,
